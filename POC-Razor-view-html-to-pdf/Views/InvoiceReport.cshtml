@@ -1,0 +1,117 @@
+﻿@using System.Globalization
+@using POC_Razor_view_html_to_pdf.Contracts
+@model IEnumerable<POC_Razor_view_html_to_pdf.Contracts.Invoice>
+
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 14px; }
+
+    .invoice { background: #e5e7eb; padding: 40px; display: flex; flex-direction: column; gap: 16px; page-break-after: always; }
+
+    h1 { font-size: 22px; font-weight: 600; }
+    h2 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    p  { margin: 2px 0; }
+
+    .addresses { display: flex; gap: 16px; }
+
+    .address-box {
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 16px;
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .address-box .label { font-weight: 500; }
+
+    .items-box {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .items-header {
+        display: grid;
+        grid-template-columns: 40px 200px 100px 100px;
+        font-weight: 600;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 6px;
+        margin-bottom: 4px;
+    }
+
+    .items-row {
+        display: grid;
+        grid-template-columns: 40px 200px 100px 100px;
+        padding: 4px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .totals {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+    .totals .bold { font-weight: 600; }
+</style>
+
+@foreach (var invoice in Model)
+{
+    IFormatProvider cultureInfo = CultureInfo.CreateSpecificCulture("pt-BR");
+    var subtotal = invoice.LineItems.Sum(li => li.Price * li.Quantity).ToString("C", cultureInfo);
+    var total    = invoice.LineItems.Sum(li => li.Price * li.Quantity).ToString("C", cultureInfo);
+
+    <div class="invoice">
+        <h1>Invoice #@invoice.Number</h1>
+        <p>Issued date: @invoice.IssuedDate.ToString("dd/MM/yyyy")</p>
+        <p>Due date: @invoice.DueDate.ToString("dd/MM/yyyy")</p>
+
+        <div class="addresses">
+            <div class="address-box">
+                <p class="label">Seller:</p>
+                <p>@invoice.SellerAddress.CompanyName</p>
+                <p>@invoice.SellerAddress.Street</p>
+                <p>@invoice.SellerAddress.City</p>
+                <p>@invoice.SellerAddress.State</p>
+                <p>@invoice.SellerAddress.Email</p>
+            </div>
+            <div class="address-box">
+                <p class="label">Bill to:</p>
+                <p>@invoice.CustomerAddress.CompanyName</p>
+                <p>@invoice.CustomerAddress.Street</p>
+                <p>@invoice.CustomerAddress.City</p>
+                <p>@invoice.CustomerAddress.State</p>
+                <p>@invoice.CustomerAddress.Email</p>
+            </div>
+        </div>
+
+        <div class="items-box">
+            <h2>Items:</h2>
+            <div class="items-header">
+                <span>#</span>
+                <span>Name</span>
+                <span>Price</span>
+                <span>Quantity</span>
+            </div>
+            @foreach ((int index, LineItem item) in invoice.LineItems.Select((li, i) => (i + 1, li)))
+            {
+                <div class="items-row">
+                    <span>@index</span>
+                    <span>@item.Name</span>
+                    <span>@item.Price.ToString("C", cultureInfo)</span>
+                    <span>@item.Quantity.ToString("N2")</span>
+                </div>
+            }
+        </div>
+
+        <div class="totals">
+            <p>Subtotal: @subtotal</p>
+            <p>Total: <span class="bold">@total</span></p>
+        </div>
+    </div>
+}

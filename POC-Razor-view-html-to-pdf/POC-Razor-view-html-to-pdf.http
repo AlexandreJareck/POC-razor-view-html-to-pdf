@@ -1,0 +1,6 @@
+@POC_Razor_view_html_to_pdf_HostAddress = http://localhost:5152
+
+GET {{POC_Razor_view_html_to_pdf_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

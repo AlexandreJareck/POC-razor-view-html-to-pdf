@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../Benchmarks/Benchmarks.csproj" Id="871a1b17-5aa4-44ff-ba02-9fac5e4d62b7" />
+  <Project Path="../LoadTests/LoadTests.csproj" Id="603a014e-ce84-40ba-905d-0a0402548867" />
+  <Project Path="POC-Razor-view-html-to-pdf.csproj" />
+</Solution>
